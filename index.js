@@ -994,7 +994,7 @@ var prototype = {
    */
   updateCustomer: function(customerId, data, callback) {
     this.performRequest({
-      method: 'put',
+      method: 'patch',
       url: '/customer/' + customerId,
       body: data 
     }, function(error, body){
