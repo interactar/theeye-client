@@ -989,8 +989,24 @@ var prototype = {
     });
   },
   /**
-   *
-   *
+   * Replace customer data
+   * @method PUT
+   * @route /customer/:customer
+   */
+  replaceCustomer: function(customerId, data, callback) {
+    this.performRequest({
+      method: 'put',
+      url: '/customer/' + customerId,
+      body: data 
+    }, function(error, body){
+      if (error) return callback(error);
+      callback(null, body.customer);
+    });
+  },  
+  /**
+   * Update customer data
+   * @method PATCH
+   * @route /customer/:customer
    */
   updateCustomer: function(customerId, data, callback) {
     this.performRequest({
