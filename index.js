@@ -97,7 +97,7 @@ var prototype = {
 
     if(!this.client_id || !this.client_secret){
       logger.debug('no credentials!');
-      return throw new Error('no credential provided. client_id & client_secret required');
+      throw new Error('no credential provided. client_id & client_secret required');
     }
 
     logger.debug('sending new authentication request');
