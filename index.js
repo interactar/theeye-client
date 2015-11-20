@@ -730,7 +730,7 @@ var prototype = {
   deleteTask: function(task_id, callback) {
     this.performRequest({
       method: 'delete',
-      uri: '/task/' + id
+      uri: '/task/' + task_id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
