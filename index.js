@@ -197,6 +197,11 @@ var prototype = {
         logger.error('body    %s' , JSON.stringify(body)    ); 
         logger.error('>>>>>>>>>>>>>>>>>>>> * <<<<<<<<<<<<<<<<<<<');
 
+        if(!error) {
+          error = new Error(JSON.stringify(body));
+          error.statusCode = httpResponse.statusCode;
+        }
+
         callNext(error, body);
       }
     }
