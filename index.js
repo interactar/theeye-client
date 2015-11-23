@@ -962,7 +962,7 @@ var prototype = {
    *
    *
    */
-  fetchCustomers: function(filters, callback) {
+  customerFetch : function(filters, callback) {
     this.performRequest({
       method: 'get',
       url: '/customer'
@@ -975,7 +975,7 @@ var prototype = {
    *
    *
    */
-  getCustomer: function(customerId, callback) {
+  customerGet : function(customerId, callback) {
     this.performRequest({
       method: 'get',
       url: '/customer/' + customerId
@@ -988,7 +988,7 @@ var prototype = {
    *
    *
    */
-  createCustomer: function(data, callback) {
+  customerCreate : function(data, callback) {
     this.performRequest({
       method: 'post',
       url: '/customer',
@@ -1003,7 +1003,7 @@ var prototype = {
    * @method PUT
    * @route /customer/:customer
    */
-  replaceCustomer: function(customerId, data, callback) {
+  customerReplace : function(customerId, data, callback) {
     this.performRequest({
       method: 'put',
       url: '/customer/' + customerId,
@@ -1018,7 +1018,7 @@ var prototype = {
    * @method PATCH
    * @route /customer/:customer
    */
-  updateCustomer: function(customerId, data, callback) {
+  customerUpdate : function(customerId, data, callback) {
     this.performRequest({
       method: 'patch',
       url: '/customer/' + customerId,
@@ -1027,12 +1027,12 @@ var prototype = {
       if (error) return callback(error);
       callback(null, body.customer);
     });
-  },  
+  },
   /**
    *
    *
    */
-  removeCustomer: function(customerId, callback) {
+  customerRemove : function(customerId, callback) {
     this.performRequest({
       method: 'delete',
       url: '/customer/' + customerId
