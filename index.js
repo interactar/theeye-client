@@ -616,7 +616,7 @@ var prototype = {
       method: 'patch',
       uri: '/script/' + id,
       formData: {
-        description : options.description || '',
+        description : options.description,
         script: {
           value: fs.createReadStream(script.fd),
           options: {
