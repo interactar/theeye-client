@@ -456,7 +456,7 @@ var prototype = {
   getAgentConfig : function(hostname, next) {
     this.performRequest({
       method:'get',
-      url: '/agent/config/:hostname'
+      url: '/agent/:hostname/config'
     },function(error,body){
       if( error ) {
         logger.error('getAgentConfig : request error');
