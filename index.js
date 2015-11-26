@@ -759,19 +759,32 @@ var prototype = {
   },
   /**
    *
+   * @param {Object} query
+   *    @property {String} resource , resource id
+   *    @property {String} type
    *
    */
-  monitorByResource: function(options, callback) {
+  monitorFetch : function(query, callback) {
     this.performRequest({
       method: 'get',
-      url: '/resource-monitor',
-      qs: {
-        type: options.type,
-        resource: options.resource
-      }
+      uri: '/monitor',
+      qs: query
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.monitors);
+    });
+  },
+  /**
+   *
+   *
+   */
+  monitorGet : function(id, callback) {
+    this.performRequest({
+      method: 'get',
+      uri: '/monitor/' + id
+    }, function(error, body) {
+      if (error) return callback(error);
+      callback(null, body.monitor);
     });
   },
   /**
