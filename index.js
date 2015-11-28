@@ -745,7 +745,7 @@ var prototype = {
    *
    *
    */
-  triggerJob: function(task_id, callback) {
+  jobCreate: function(task_id, callback) {
     this.performRequest({
       method: 'post',
       uri: '/job',
