@@ -691,7 +691,7 @@ var prototype = {
     this.performRequest({
       method: 'post',
       url: '/task',
-      formData: form
+      formData: formData
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
