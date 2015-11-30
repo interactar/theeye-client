@@ -456,7 +456,7 @@ var prototype = {
   getAgentConfig : function(hostname, next) {
     this.performRequest({
       method:'get',
-      url: '/agent/config/:hostname'
+      url: '/agent/:hostname/config',
     },function(error,body){
       if( error ) {
         logger.error('getAgentConfig : request error');
@@ -761,10 +761,10 @@ var prototype = {
    *
    *
    */
-  monitorByResource: function(options, callback) {
+  monitorFetch: function(options, callback) {
     this.performRequest({
       method: 'get',
-      url: '/resource-monitor',
+      url: '/monitor',
       qs: {
         type: options.type,
         resource: options.resource
