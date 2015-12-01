@@ -456,7 +456,7 @@ var prototype = {
   getAgentConfig : function(hostname, next) {
     this.performRequest({
       method:'get',
-      url: '/agent/config/:hostname'
+      url: '/agent/:hostname/config',
     },function(error,body){
       if( error ) {
         logger.error('getAgentConfig : request error');
@@ -745,7 +745,7 @@ var prototype = {
    *
    *
    */
-  triggerJob: function(task_id, callback) {
+  jobCreate: function(task_id, callback) {
     this.performRequest({
       method: 'post',
       uri: '/job',
@@ -759,12 +759,15 @@ var prototype = {
   },
   /**
    *
+   * @param {Object} query
+   *    @property {String} resource , resource id
+   *    @property {String} type
    *
    */
-  monitorByResource: function(options, callback) {
+  monitorFetch: function(options, callback) {
     this.performRequest({
       method: 'get',
-      url: '/resource-monitor',
+      url: '/monitor',
       qs: {
         type: options.type,
         resource: options.resource
@@ -772,6 +775,19 @@ var prototype = {
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.monitors);
+    });
+  },
+  /**
+   *
+   *
+   */
+  monitorGet : function(id, callback) {
+    this.performRequest({
+      method: 'get',
+      uri: '/monitor/' + id
+    }, function(error, body) {
+      if (error) return callback(error);
+      callback(null, body.monitor);
     });
   },
   /**
