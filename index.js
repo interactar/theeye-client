@@ -182,9 +182,9 @@ var prototype = {
         || /40./.test( httpResponse.statusCode )
       ) {
         body = body || {};
-        logger.error(body);
+        logger.error( JSON.stringify(body) );
         var error = new Error(body.message || 'client error');
-        error.data = body.data || {};
+        error.data = body || {};
         error.statusCode = httpResponse.statusCode ;
         callNext(error,body);
       }
@@ -456,8 +456,8 @@ var prototype = {
   getAgentConfig : function(hostname, next) {
     this.performRequest({
       method:'get',
-      //url: '/agent/:hostname/config',
-      url: '/agent/config/:hostname',
+      url: '/agent/:hostname/config',
+      //url: '/agent/config/:hostname',
     },function(error,body){
       if( error ) {
         logger.error('getAgentConfig : request error');
@@ -1149,6 +1149,44 @@ var prototype = {
       if (error) return callback(error);
       callback(null, body);
     });
+  },
+  /**
+   *
+   * HostGroup endpoint
+   * @author Facundo
+   *
+   */
+  hostgroupFetch : function(options, callback){
+    this.performRequest({
+      method: 'get',
+      uri: '/hostgroup'
+    }, function(error, body) {
+      if(error) return callback(error);
+      callback(null, body.groups);
+    });
+  },
+  hostgroupCreate : function(data, callback){
+    this.performRequest({
+      method: 'post',
+      uri: '/hostgroup',
+      body: data
+    }, function(error, body) {
+      if(error) return callback(error);
+      callback(null, body.group);
+    });
+  },
+  hostgroupDelete : function(id, callback){
+    this.performRequest({
+      method: 'delete',
+      uri: '/hostgroup/' + id
+    }, function(error, body) {
+      if(error) return callback(error);
+      callback(null, body);
+    });
+  },
+  hostgroupGet : function(id, callback){
+  },
+  hostgroupPatch : function(id, data, callback){
   }
 }
 

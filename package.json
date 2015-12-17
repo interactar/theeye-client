@@ -2,7 +2,7 @@
   "name": "theeye-client",
   "author": "Facundo <facugon@interactar.com>",
   "license": "ISC",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "TheEye API Client",
   "main": "index.js",
   "scripts": {
