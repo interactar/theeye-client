@@ -1185,9 +1185,138 @@ var prototype = {
     });
   },
   hostgroupGet : function(id, callback){
+    this.performRequest({
+      method: 'get',
+      uri: '/hostgroup/' + id
+    }, function(error, body) {
+      if(error) return callback(error);
+      callback(null, body.group);
+    });
   },
-  hostgroupPatch : function(id, data, callback){
-  }
+
+  /*
+  hostgroupUpdate : function(id, updates, callback){
+    this.performRequest({
+      method: 'put',
+      uri: '/hostgroup/' + id,
+      body: updates
+    }, function(error, body) {
+      if(error) return callback(error);
+      callback(null, body.group);
+    });
+  },
+  */
+
+  /**
+   * host group subresource task template.
+   *
+   * access and updates a specific group task-template.
+   *
+   * @author Facundo
+   * @method PUT
+   * @param {Integer} groupid
+   * @param {Integer} taskid
+   * @param {Object} updates
+   * @param {Function} callback
+   *
+   **/
+  hostgrouptasktemplateUpdate: function(groupid, taskid, updates, callback){
+    var url = '/hostgroup/' + groupid + '/tasktemplate/' + taskid;
+    this.performRequest({
+      method: 'put',
+      uri: url,
+      body: updates
+    },function(error, body){
+      if(error) return callback(error);
+      callback(null, body.task);
+    });
+  },
+  /*
+   * add a new task to a group
+   */
+  hostgrouptasktemplateCreate: function(groupid, task, callback){
+    var url = '/hostgroup/' + groupid + '/tasktemplate';
+    this.performRequest({
+      method: 'post',
+      uri: url,
+      body: task 
+    },function(error, body){
+      if(error) return callback(error);
+      callback(null, body.task);
+    });
+  },
+  /**
+   *
+   */
+  hostgrouptasktemplateDelete: function(groupid, taskid, callback){
+    var url = '/hostgroup/' +
+      groupid + '/tasktemplate/' + taskid;
+
+    this.performRequest({
+      method: 'delete',
+      uri: url,
+    },function(error){
+      if(error) return callback(error);
+      callback(null);
+    });
+  },
+  /**
+   * host group subresource monitor template.
+   *
+   * access and updates a specific group monitor-template.
+   *
+   * @author Facundo
+   * @method PUT
+   * @param {Integer} groupid
+   * @param {Integer} monitorid
+   * @param {Object} updates
+   * @param {Function} callback
+   *
+   **/
+  hostgroupmonitortemplateUpdate: function(groupid, monitorid, updates, callback){
+    var url = '/hostgroup/' + groupid + '/monitortemplate/' + monitorid;
+    this.performRequest({
+      method: 'put',
+      uri: url,
+      body: updates
+    },function(error, body){
+      if(error) return callback(error);
+      callback(null, body.monitor);
+    });
+  },
+  /**
+   * add a new monitor to a group
+   * @method POST
+   * @param {Integer} groupid
+   * @param {Integer} monitor
+   * @param {Function} callback
+   */
+  hostgroupmonitortemplateCreate: function(groupid, monitor, callback){
+    var url = '/hostgroup/' + groupid + '/monitortemplate';
+    this.performRequest({
+      method: 'post',
+      uri: url,
+      body: monitor 
+    },function(error, body){
+      if(error) return callback(error);
+      callback(null, body.monitor);
+    });
+  },
+  /**
+   *
+   */
+  hostgroupmonitortemplateDelete: function(groupid, monitorid, callback){
+    var url = '/hostgroup/' +
+      groupid + '/monitortemplate/' + monitorid;
+
+    this.performRequest({
+      method: 'delete',
+      uri: url,
+    },function(error){
+      if(error) return callback(error);
+      callback(null);
+    });
+  },
 }
 
 for(var p in prototype) {
