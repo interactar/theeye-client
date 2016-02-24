@@ -1065,7 +1065,7 @@ var prototype = {
   userGet : function(id, callback) {
     this.performRequest({
       method: 'get',
-      url: '/user/' + customerId
+      url: '/user/' + id 
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.user);
