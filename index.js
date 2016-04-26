@@ -589,9 +589,9 @@ var prototype = {
           value: fs.createReadStream(script.fd),
           options: {
             filename: options.filename || script.filename
-          },
-          public: options.public || false
-        }
+          }
+        },
+        public: options.public || false
       }
     }, function(error, body) {
       if (error) return callback(error);
