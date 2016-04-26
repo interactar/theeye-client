@@ -162,7 +162,7 @@ var prototype = {
         logger.error(body);
         callNext(error, body);
       }
-      else if( httpResponse.statusCode == 401 ) 
+      else if( httpResponse.statusCode == 401 )
       {
         // unauthorized
         logger.error('access denied');
@@ -178,7 +178,7 @@ var prototype = {
 
       }
       else if(
-        (body && body.status == 'error') 
+        (body && body.status == 'error')
         || /40./.test( httpResponse.statusCode )
       ) {
         body = body || {};
@@ -191,10 +191,10 @@ var prototype = {
       else
       {
         logger.error('>>>>>>>>>>>> unhandled error! <<<<<<<<<<<<');
-        logger.error('request %s' , JSON.stringify(request) ); 
-        logger.error('status  %s' , httpResponse.statusCode ); 
-        logger.error('error   %s' , error && error.message  ); 
-        logger.error('body    %s' , JSON.stringify(body)    ); 
+        logger.error('request %s' , JSON.stringify(request) );
+        logger.error('status  %s' , httpResponse.statusCode );
+        logger.error('error   %s' , error && error.message  );
+        logger.error('body    %s' , JSON.stringify(body)    );
         logger.error('>>>>>>>>>>>>>>>>>>>> * <<<<<<<<<<<<<<<<<<<');
 
         if(!error) {
@@ -313,7 +313,7 @@ var prototype = {
   put : function(route,query,body,next) {
     var options = {
       method: 'PUT',
-      url: route, 
+      url: route,
       body: body,
       qs: query
     };
@@ -327,7 +327,7 @@ var prototype = {
   patch : function(route,query,body,next) {
     var options = {
       method: 'PATCH',
-      url: route, 
+      url: route,
       body: body,
       qs: query
     };
@@ -384,7 +384,7 @@ var prototype = {
   submitJobResult : function(jobId,result,next) {
     this.performRequest({
       method: 'PUT',
-      url: '/job/' + jobId, 
+      url: '/job/' + jobId,
       body: {result:result}
     }, function(error,response){
       if( error ) {
@@ -476,13 +476,13 @@ var prototype = {
       }
     });
   },
-  //  
-  //  
-  //  
+  //
+  //
+  //
   //  admin resources operations
-  //  
-  //  
-  //  
+  //
+  //
+  //
   /**
    * Gets a script by its Id
    *
@@ -589,7 +589,8 @@ var prototype = {
           value: fs.createReadStream(script.fd),
           options: {
             filename: options.filename || script.filename
-          }
+          },
+          public: options.public || false
         }
       }
     }, function(error, body) {
@@ -623,7 +624,8 @@ var prototype = {
           options: {
             filename: options.filename || script.filename
           }
-        }
+        },
+        public: options.public || false
       }
     }, function(error, body) {
       if (error) return callback(error);
@@ -684,7 +686,7 @@ var prototype = {
     if( task.target == 'single-resource' ) {
       if(task.resource_id) formData['resource'] = task.resource_id;
       if(task.hosts_id) formData['hosts'] = task.hosts_id[0];
-    } 
+    }
     else if (task.target == 'multi-hosts') {
       formData['hosts'] = task.hosts_id;
     }
@@ -803,7 +805,7 @@ var prototype = {
       if (error) return callback(error);
       callback(null, body.resource);
     });
-  },  
+  },
   /**
   * Gets available resources for customer and username
   *
@@ -889,7 +891,7 @@ var prototype = {
       logger.debug('resource patch success');
       callback(null, body);
     });
-  },  
+  },
   /**
    *
    *
@@ -1024,12 +1026,12 @@ var prototype = {
     this.performRequest({
       method: 'put',
       url: '/customer/' + customerId,
-      body: data 
+      body: data
     }, function(error, body){
       if (error) return callback(error);
       callback(null, body.customer);
     });
-  },  
+  },
   /**
    * Update customer data
    * @method PATCH
@@ -1039,7 +1041,7 @@ var prototype = {
     this.performRequest({
       method: 'patch',
       url: '/customer/' + customerId,
-      body: data 
+      body: data
     }, function(error, body){
       if (error) return callback(error);
       callback(null, body.customer);
@@ -1132,7 +1134,7 @@ var prototype = {
     this.performRequest({
       method: 'patch',
       uri: '/user/' + id,
-      body: body 
+      body: body
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.user);
@@ -1239,7 +1241,7 @@ var prototype = {
     this.performRequest({
       method: 'post',
       uri: url,
-      body: task 
+      body: task
     },function(error, body){
       if(error) return callback(error);
       callback(null, body.task);
@@ -1296,7 +1298,7 @@ var prototype = {
     this.performRequest({
       method: 'post',
       uri: url,
-      body: monitor 
+      body: monitor
     },function(error, body){
       if(error) return callback(error);
       callback(null, body.monitor);
