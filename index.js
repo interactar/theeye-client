@@ -8,13 +8,13 @@ var util = require('util');
 var format = util.format;
 
 var logger = {
-  debug : require('debug')('eye:client:debug') ,
-  error : require('debug')('eye:client:error')
+  'debug' : require('debug')('eye:client:debug') ,
+  'error' : require('debug')('eye:client:error')
 };
 
 var EventEmitter = require('events').EventEmitter;
 
-var CLIENT_VERSION = 'v0.0.0-beta' ;
+var CLIENT_VERSION = 'v0.7.1-beta' ;
 
 var CLIENT_NAME = 'Golum' ;
 
@@ -213,57 +213,63 @@ var prototype = {
    * @return {Object} Request
    */
   performRequest : function(options, doneFn){
-    var connection = this;
-    doneFn = doneFn || function(){};
-    var hostname = this.hostname;
+    try {
+      var connection = this;
+      doneFn = doneFn || function(){};
+      var hostname = this.hostname;
 
-    var prepareUri = function (uri) {
-      uri = uri.replace(':hostname' , hostname);
-      return uri ;
-    }
-
-    var prepareQueryString = function (qs) {
-      qs = qs || {};
-      if( ! qs.customer ) {
-        if( connection.client_customer ) {
-          qs.customer = connection.client_customer;
-        }
+      var prepareUri = function (uri) {
+        uri = uri.replace(':hostname' , hostname);
+        return uri ;
       }
-      /**
-      if( ! qs.client_id ) {
+
+      var prepareQueryString = function (qs) {
+        qs = qs || {};
+        if( ! qs.customer ) {
+          if( connection.client_customer ) {
+            qs.customer = connection.client_customer;
+          }
+        }
+        /**
+        if( ! qs.client_id ) {
         if( connection.client_id ) {
-          qs.client_id = connection.client_id;
+        qs.client_id = connection.client_id;
+        }
+        }
+        */
+        return qs;
+      }
+
+      options.uri = options.url = prepareUri(options.url || options.uri);
+      options.qs = prepareQueryString(options.qs);
+
+      // set authentication method if not provided
+      if( ! options.auth ) {
+        if( connection.access_token ) {
+          options.auth = { bearer : connection.access_token } ;
         }
       }
-      */
-      return qs;
-    }
 
-    options.uri = options.url = prepareUri(options.url || options.uri);
-    options.qs = prepareQueryString(options.qs);
+      var msg = 'requesting %s';
+      msg += options.qs ? ' qs: %o' : '';
+      logger.debug(msg, options.url, options.qs || '');
 
-    // set authentication method if not provided
-    if( ! options.auth ) {
-      if( connection.access_token ) {
-        options.auth = { bearer : connection.access_token } ;
+      var requestDoneFn = function(error, httpResponse, body){
+        connection.processResponse(
+          options,
+          error,
+          httpResponse,
+          body,
+          doneFn
+        );
       }
+
+      return connection.request(options, requestDoneFn);
+    } catch (e) {
+      logger.error('request could not be completed');
+      logger.error(e);
+      doneFn(e);
     }
-
-    var msg = 'requesting %s';
-    msg += options.qs ? ' qs: %o' : '';
-    logger.debug(msg, options.url, options.qs || '');
-
-    var requestDoneFn = function(error, httpResponse, body){
-      connection.processResponse(
-        options,
-        error,
-        httpResponse,
-        body,
-        doneFn
-      );
-    }
-
-    return connection.request(options, requestDoneFn);
   },
   /**
    * get request wrapper
@@ -665,6 +671,7 @@ var prototype = {
   /**
   * Creates a new task for a customer in the supervisor
   *
+  *
   * @param {Object} task - A task object.
   *   - param {String} name - Task name.
   *   - param {String} description - Task description.
@@ -678,6 +685,7 @@ var prototype = {
       'name': task.name,
       'description': task.description,
       'script': task.script_id,
+      'public': task.public,
       'script_arguments': task.script_arguments.split(',')
     };
 
@@ -714,6 +722,7 @@ var prototype = {
       'description': task.description,
       'host': task.host_id,
       'script': task.script_id,
+      'public': task.public
     };
 
     if(task.resource_id) formData['resource'] = task.resource_id;
