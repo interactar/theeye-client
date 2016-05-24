@@ -768,7 +768,7 @@ var prototype = {
    *
    * Schedules a job for delayed running.
    * @param data {Object}
-   *  - runOn: Date
+   *  - runDate: Date.toString | human-interval
    *  - repeatEvery: interval
    */
   jobSchedule: function(data, callback){
