@@ -144,7 +144,6 @@ var prototype = {
     var callNext = function(error, body){
       if(next) next(error, body, httpResponse);
     }
-
     if( ! error && /20./.test( httpResponse.statusCode ) ) {
       logger.debug('%s %s request success', request.method, request.url);
       callNext(null,body);
@@ -765,6 +764,30 @@ var prototype = {
         'task_id': task_id
       }
     }, function(error, body) {
+      if (error) return callback(error);
+      callback(null, body);
+    });
+  },
+  /**
+   * Scheduler functionality mini-readme:
+   * The scheduler executes jobs. The jobs always refer
+   * to a task, user and customer. The scheduler interacts only
+   * with the Job Controller on the supervisor. On the web this is done
+   * via the the Palanca Controller
+   * (Web) Palanca -> (Lib) Client -> (Supervisor) Job
+   *
+   * Schedules a job for delayed running.
+   * @param data {Object}
+   *  - runDate: Date.toString | human-interval
+   *  - repeatEvery: interval
+   */
+  jobSchedule: function(data, callback){
+    this.performRequest({
+      method: 'post',
+      uri: '/job/schedule',
+      body: data,
+      json: true
+    }, function(error, body){
       if (error) return callback(error);
       callback(null, body);
     });
