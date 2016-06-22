@@ -687,16 +687,9 @@ var prototype = {
       'description': task.description,
       'script': task.script_id,
       'public': task.public,
-      'script_arguments': task.script_arguments.split(',')
+      'script_arguments': task.script_arguments.split(','),
+      'hosts': task.hosts_id
     };
-
-    if( task.target == 'single-resource' ) {
-      if(task.resource_id) formData['resource'] = task.resource_id;
-      if(task.hosts_id) formData['hosts'] = task.hosts_id[0];
-    }
-    else if (task.target == 'multi-hosts') {
-      formData['hosts'] = task.hosts_id;
-    }
 
     this.performRequest({
       method: 'post',
