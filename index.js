@@ -214,28 +214,21 @@ var prototype = {
   performRequest : function(options, doneFn){
     try {
       var connection = this;
-      doneFn = doneFn || function(){};
+      doneFn||(doneFn=function(){});
       var hostname = this.hostname;
 
-      var prepareUri = function (uri) {
-        uri = uri.replace(':hostname' , hostname);
-        return uri ;
+      var prepareUri = function(uri){
+        uri = uri.replace(':hostname',hostname);
+        return uri;
       }
 
-      var prepareQueryString = function (qs) {
-        qs = qs || {};
+      var prepareQueryString = function(qs){
+        qs||(qs={});
         if( ! qs.customer ) {
           if( connection.client_customer ) {
             qs.customer = connection.client_customer;
           }
         }
-        /**
-        if( ! qs.client_id ) {
-        if( connection.client_id ) {
-        qs.client_id = connection.client_id;
-        }
-        }
-        */
         return qs;
       }
 
@@ -497,9 +490,10 @@ var prototype = {
    *   - param {Array} scripts - Array of script objects.
    */
   script: function(id, callback) {
+    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'get',
-      url: '/script/' + id
+      url: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.script);
@@ -515,9 +509,10 @@ var prototype = {
    *   - param {Array} scripts - Array of script objects.
    */
   scripts: function(callback) {
+    var url = path.join(this.client_customer,'script');
     this.performRequest({
       method: 'get',
-      url: '/script'
+      url: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.scripts);
@@ -533,13 +528,12 @@ var prototype = {
    * @return {Stream} script file data stream
    *
    */
-  downloadScript : function(scriptId, destinationPath, next) {
+  scriptDownloadStream : function(scriptId, destinationPath, next) {
     var writable = fs.createWriteStream( destinationPath, { mode:'0755' } );
 
-    this.performRequest({
-      method: 'get',
-      url: format('/script/%s/download', scriptId)
-    })
+    var url = path.join(this.client_customer,'script',scriptId,'download');
+
+    this.performRequest({ method: 'get', url: url })
     .on('response', function(response) {
       if(response.statusCode != 200) {
         this.emit('error', new Error('get script response error ' + response.statusCode));
@@ -563,9 +557,10 @@ var prototype = {
    *   - param {scriptFile} - base64 encode file
    */
   scriptDownload : function(id, callback) {
+    var url = path.join(this.client_customer,'script',id,'download');
     this.performRequest({
       method: 'get',
-      url: format('/script/%s/download', id)
+      url: url
     },function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -585,9 +580,10 @@ var prototype = {
    *   - param {Array} script - The new script object.
    */
   createScript: function(script, options, callback) {
+    var url = path.join(this.client_customer,'script');
     this.performRequest({
       method: 'post',
-      url: '/script',
+      url: url,
       formData: {
         description : options.description || '',
         script: {
@@ -607,9 +603,10 @@ var prototype = {
    * Deletes a Script
    */
   deleteScript: function(id, callback) {
+    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'delete',
-      uri: '/script/' + id
+      uri: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -619,9 +616,10 @@ var prototype = {
    * Patch a Script
    */
   patchScript: function(id, script, options, callback) {
+    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'patch',
-      uri: '/script/' + id,
+      uri: url,
       formData: {
         description : options.description,
         script: {
