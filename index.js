@@ -1190,18 +1190,20 @@ var prototype = {
    *
    */
   hostgroupFetch : function(options, callback){
+    var url = path.join(this.client_customer,'hostgroup');
     this.performRequest({
       method: 'get',
-      uri: '/hostgroup'
+      uri: url
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body.groups);
     });
   },
   hostgroupCreate : function(data, callback){
+    var url = path.join(this.client_customer,'hostgroup');
     this.performRequest({
       method: 'post',
-      uri: '/hostgroup',
+      uri: url,
       body: data
     }, function(error, body) {
       if(error) return callback(error);
@@ -1209,37 +1211,25 @@ var prototype = {
     });
   },
   hostgroupDelete : function(id, callback){
+    var url = path.join(this.client_customer,'hostgroup',id);
     this.performRequest({
       method: 'delete',
-      uri: '/hostgroup/' + id
+      uri: url
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body);
     });
   },
   hostgroupGet : function(id, callback){
+    var url = path.join(this.client_customer,'hostgroup',id);
     this.performRequest({
       method: 'get',
-      uri: '/hostgroup/' + id
+      uri: url,
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body.group);
     });
   },
-
-  /*
-  hostgroupUpdate : function(id, updates, callback){
-    this.performRequest({
-      method: 'put',
-      uri: '/hostgroup/' + id,
-      body: updates
-    }, function(error, body) {
-      if(error) return callback(error);
-      callback(null, body.group);
-    });
-  },
-  */
-
   /**
    * host group subresource task template.
    *
@@ -1254,7 +1244,7 @@ var prototype = {
    *
    **/
   hostgrouptasktemplateUpdate: function(groupid, taskid, updates, callback){
-    var url = '/hostgroup/' + groupid + '/tasktemplate/' + taskid;
+    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate',taskid);
     this.performRequest({
       method: 'put',
       uri: url,
@@ -1268,7 +1258,7 @@ var prototype = {
    * add a new task to a group
    */
   hostgrouptasktemplateCreate: function(groupid, task, callback){
-    var url = '/hostgroup/' + groupid + '/tasktemplate';
+    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate');
     this.performRequest({
       method: 'post',
       uri: url,
@@ -1282,8 +1272,7 @@ var prototype = {
    *
    */
   hostgrouptasktemplateDelete: function(groupid, taskid, callback){
-    var url = '/hostgroup/' +
-      groupid + '/tasktemplate/' + taskid;
+    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate',taskid);
 
     this.performRequest({
       method: 'delete',
@@ -1307,7 +1296,7 @@ var prototype = {
    *
    **/
   hostgroupmonitortemplateUpdate: function(groupid, monitorid, updates, callback){
-    var url = '/hostgroup/' + groupid + '/monitortemplate/' + monitorid;
+    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate',monitorid);
     this.performRequest({
       method: 'put',
       uri: url,
@@ -1325,7 +1314,7 @@ var prototype = {
    * @param {Function} callback
    */
   hostgroupmonitortemplateCreate: function(groupid, monitor, callback){
-    var url = '/hostgroup/' + groupid + '/monitortemplate';
+    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate');
     this.performRequest({
       method: 'post',
       uri: url,
@@ -1339,8 +1328,7 @@ var prototype = {
    *
    */
   hostgroupmonitortemplateDelete: function(groupid, monitorid, callback){
-    var url = '/hostgroup/' +
-      groupid + '/monitortemplate/' + monitorid;
+    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate',monitorid);
 
     this.performRequest({
       method: 'delete',
