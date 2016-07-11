@@ -398,26 +398,6 @@ var prototype = {
    *
    *
    */
-  updateResource : function(resourceId,resourceUpdates,next) {
-    this.performRequest({
-      method: 'PUT',
-      url:'/resource/' + resourceId,
-      body: resourceUpdates
-    }, function(error,response){
-      if( error ) {
-        logger.error('unable to update resource');
-        logger.error(error.message);
-        if(next) next(error);
-      } else {
-        logger.debug('resource updated');
-        if(next) next(null,response);
-      }
-    });
-  },
-  /**
-   *
-   *
-   */
   submitDstat : function(dstat,next) {
     this.performRequest({
       url: '/dstat/:hostname',
@@ -821,9 +801,10 @@ var prototype = {
    *
    */
   resource: function(id, callback) {
+    var url = path.join(this.client_customer,'resource',id);
     this.performRequest({
       method: 'get',
-      url: '/resource/' + id
+      url:url 
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.resource);
@@ -838,9 +819,10 @@ var prototype = {
   *   - param {Array} resources - Array of resource objects.
   */
   resources: function(callback) {
+    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'get',
-      url: '/resource'
+      url: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.resources);
@@ -851,9 +833,10 @@ var prototype = {
    *
    */
   deleteResource : function(id, callback) {
+    var url = path.join(this.client_customer,'resource',id);
     this.performRequest({
       method: 'delete',
-      url: '/resource/' + id
+      url: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -878,9 +861,10 @@ var prototype = {
       else formData[key] = resource[key];
     });
 
+    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'post',
-      url: '/resource',
+      url: url,
       formData: formData
     }, function(error, body) {
       if (error) return callback(error);
@@ -893,6 +877,7 @@ var prototype = {
    */
   patchResource: function(id, resource, callback) {
     var formData = {};
+    var url = path.join(this.client_customer,'resource',id);
 
     Object.keys(resource).forEach(function(key) {
       if(key == 'script_arguments') {
@@ -906,7 +891,7 @@ var prototype = {
 
     this.performRequest({
       method: 'patch',
-      url: '/resource/' + id,
+      url: url,
       formData: formData
     }, function(error, body) {
       if (error) return callback(error);
@@ -919,10 +904,32 @@ var prototype = {
    *
    *
    */
+  updateResource : function(id,resourceUpdates,next) {
+    var url = path.join(this.client_customer,'resource',id);
+    this.performRequest({
+      method: 'PUT',
+      url:url,
+      body: resourceUpdates
+    }, function(error,response){
+      if( error ) {
+        logger.error('unable to update resource');
+        logger.error(error.message);
+        if(next) next(error);
+      } else {
+        logger.debug('resource updated');
+        if(next) next(null,response);
+      }
+    });
+  },
+  /**
+   *
+   *
+   */
   resourceTypes: function(callback) {
+    var url = path.join(this.client_customer,'resource','type');
     this.performRequest({
       method: 'get',
-      url: '/resource/type'
+      url: url
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.types);
@@ -973,9 +980,10 @@ var prototype = {
    *
    */
   hostResource: function(id, callback){
+    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'get',
-      url: '/resource',
+      url: url,
       qs: {
         host: id
       }
