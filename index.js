@@ -216,15 +216,21 @@ var prototype = {
       var connection = this;
       doneFn||(doneFn=function(){});
       var hostname = this.hostname;
+      var customer = this.client_customer;
 
-      var prepareUri = function(uri){
+      var prepareUri = function(options){
+        var uri = options.uri||options.url;
         uri = uri.replace(':hostname',hostname);
+        uri = uri.replace(':customer',customer);
         return uri;
       }
 
-      var prepareQueryString = function(qs){
-        qs||(qs={});
-        if( ! qs.customer ) {
+      var prepareQueryString = function(options){
+        // add customer to the qs if not present elsewhere
+        var qs = options.qs||{};
+        var uri = options.uri||options.url;
+        var customer = qs.customer || /:customer/.test(uri) !== false;
+        if(!customer) {
           if( connection.client_customer ) {
             qs.customer = connection.client_customer;
           }
@@ -232,8 +238,8 @@ var prototype = {
         return qs;
       }
 
-      options.uri = options.url = prepareUri(options.url || options.uri);
-      options.qs = prepareQueryString(options.qs);
+      options.qs = prepareQueryString(options);
+      options.uri = options.url = prepareUri(options);
 
       // set authentication method if not provided
       if( ! options.auth ) {
@@ -345,8 +351,8 @@ var prototype = {
     var hostname = (options && options.hostname) ? options.hostname : this.hostname;
 
     this.performRequest({
-      method: 'get',
-      url: '/job',
+      method: 'GET',
+      url: '/:customer/job',
       qs: {
         process_next: 1,
         hostname: hostname
@@ -372,7 +378,7 @@ var prototype = {
   sendAgentKeepAlive : function() {
     this.performRequest({
       method:'put',
-      url:'/agent/:hostname'
+      url: '/:customer/agent/:hostname'
     });
   },
   /**
@@ -382,7 +388,7 @@ var prototype = {
   submitJobResult : function(jobId,result,next) {
     this.performRequest({
       method: 'PUT',
-      url: '/job/' + jobId,
+      url: '/:customer/job/' + jobId,
       body: {result:result}
     }, function(error,response){
       if( error ) {
@@ -400,7 +406,7 @@ var prototype = {
    */
   submitDstat : function(dstat,next) {
     this.performRequest({
-      url: '/dstat/:hostname',
+      url: '/:customer/dstat/:hostname',
       method: 'post',
       body: dstat
     }, next);
@@ -431,11 +437,10 @@ var prototype = {
    *
    *
    */
-  getAgentConfig : function(hostname, next) {
+  getAgentConfig: function(hostname, next) {
     this.performRequest({
       method:'get',
-      url: '/agent/:hostname/config',
-      //url: '/agent/config/:hostname',
+      url:  '/:customer/agent/:hostname/config'
     },function(error,body){
       if( error ) {
         logger.error('getAgentConfig : request error');
@@ -470,10 +475,9 @@ var prototype = {
    *   - param {Array} scripts - Array of script objects.
    */
   script: function(id, callback) {
-    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'get',
-      url: url
+      url: '/:customer/script/' + id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.script);
@@ -489,10 +493,9 @@ var prototype = {
    *   - param {Array} scripts - Array of script objects.
    */
   scripts: function(callback) {
-    var url = path.join(this.client_customer,'script');
     this.performRequest({
       method: 'get',
-      url: url
+      url: '/:customer/script'
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.scripts);
@@ -511,9 +514,10 @@ var prototype = {
   scriptDownloadStream : function(scriptId, destinationPath, next) {
     var writable = fs.createWriteStream( destinationPath, { mode:'0755' } );
 
-    var url = path.join(this.client_customer,'script',scriptId,'download');
-
-    this.performRequest({ method: 'get', url: url })
+    this.performRequest({
+      method: 'get',
+      url: '/:customer/script/' + scriptId  + '/download'
+    })
     .on('response', function(response) {
       if(response.statusCode != 200) {
         this.emit('error', new Error('get script response error ' + response.statusCode));
@@ -537,10 +541,10 @@ var prototype = {
    *   - param {scriptFile} - base64 encode file
    */
   scriptDownload : function(id, callback) {
-    var url = path.join(this.client_customer,'script',id,'download');
+    var url = path.join();
     this.performRequest({
       method: 'get',
-      url: url
+      uri: '/:customer/script/' + id + '/download'
     },function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -560,10 +564,9 @@ var prototype = {
    *   - param {Array} script - The new script object.
    */
   createScript: function(script, options, callback) {
-    var url = path.join(this.client_customer,'script');
     this.performRequest({
       method: 'post',
-      url: url,
+      url: '/:customer/script',
       formData: {
         description : options.description || '',
         script: {
@@ -583,10 +586,9 @@ var prototype = {
    * Deletes a Script
    */
   deleteScript: function(id, callback) {
-    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'delete',
-      uri: url
+      uri: '/:customer/script/' + id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -596,10 +598,9 @@ var prototype = {
    * Patch a Script
    */
   patchScript: function(id, script, options, callback) {
-    var url = path.join(this.client_customer,'script',id);
     this.performRequest({
       method: 'patch',
-      uri: url,
+      uri: '/:customer/script/' + id,
       formData: {
         description : options.description,
         script: {
@@ -729,8 +730,8 @@ var prototype = {
    */
   jobCreate: function(task_id, callback) {
     this.performRequest({
-      method: 'post',
-      uri: '/job',
+      method: 'POST',
+      uri: '/:customer/job',
       qs: {
         'task_id': task_id
       }
@@ -754,8 +755,8 @@ var prototype = {
    */
   jobSchedule: function(data, callback){
     this.performRequest({
-      method: 'post',
-      uri: '/job/schedule',
+      method: 'POST',
+      uri: '/:customer/job/schedule',
       body: data,
       json: true
     }, function(error, body){
@@ -801,10 +802,9 @@ var prototype = {
    *
    */
   resource: function(id, callback) {
-    var url = path.join(this.client_customer,'resource',id);
     this.performRequest({
       method: 'get',
-      url:url 
+      url: '/:customer/resource/' + id 
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.resource);
@@ -819,10 +819,9 @@ var prototype = {
   *   - param {Array} resources - Array of resource objects.
   */
   resources: function(callback) {
-    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'get',
-      url: url
+      url: '/:customer/resource'
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.resources);
@@ -833,10 +832,9 @@ var prototype = {
    *
    */
   deleteResource : function(id, callback) {
-    var url = path.join(this.client_customer,'resource',id);
     this.performRequest({
       method: 'delete',
-      url: url
+      url: '/:customer/resource/' + id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -861,10 +859,9 @@ var prototype = {
       else formData[key] = resource[key];
     });
 
-    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'post',
-      url: url,
+      url: '/:customer/resource',
       formData: formData
     }, function(error, body) {
       if (error) return callback(error);
@@ -877,7 +874,6 @@ var prototype = {
    */
   patchResource: function(id, resource, callback) {
     var formData = {};
-    var url = path.join(this.client_customer,'resource',id);
 
     Object.keys(resource).forEach(function(key) {
       if(key == 'script_arguments') {
@@ -891,7 +887,7 @@ var prototype = {
 
     this.performRequest({
       method: 'patch',
-      url: url,
+      url: '/:customer/resource/' + id,
       formData: formData
     }, function(error, body) {
       if (error) return callback(error);
@@ -905,10 +901,9 @@ var prototype = {
    *
    */
   updateResource : function(id,resourceUpdates,next) {
-    var url = path.join(this.client_customer,'resource',id);
     this.performRequest({
       method: 'PUT',
-      url:url,
+      url: '/:customer/resource/' + id,
       body: resourceUpdates
     }, function(error,response){
       if( error ) {
@@ -926,10 +921,9 @@ var prototype = {
    *
    */
   resourceTypes: function(callback) {
-    var url = path.join(this.client_customer,'resource','type');
     this.performRequest({
       method: 'get',
-      url: url
+      url: '/:customer/resource/type'
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.types);
@@ -980,10 +974,9 @@ var prototype = {
    *
    */
   hostResource: function(id, callback){
-    var url = path.join(this.client_customer,'resource');
     this.performRequest({
       method: 'get',
-      url: url,
+      url: '/:customer/resource',
       qs: {
         host: id
       }
@@ -1190,20 +1183,18 @@ var prototype = {
    *
    */
   hostgroupFetch : function(options, callback){
-    var url = path.join(this.client_customer,'hostgroup');
     this.performRequest({
       method: 'get',
-      uri: url
+      url: '/:customer/hostgroup',
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body.groups);
     });
   },
   hostgroupCreate : function(data, callback){
-    var url = path.join(this.client_customer,'hostgroup');
     this.performRequest({
       method: 'post',
-      uri: url,
+      url: '/:customer/hostgroup',
       body: data
     }, function(error, body) {
       if(error) return callback(error);
@@ -1211,20 +1202,18 @@ var prototype = {
     });
   },
   hostgroupDelete : function(id, callback){
-    var url = path.join(this.client_customer,'hostgroup',id);
     this.performRequest({
       method: 'delete',
-      uri: url
+      url: '/:customer/hostgroup/' + id,
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body);
     });
   },
   hostgroupGet : function(id, callback){
-    var url = path.join(this.client_customer,'hostgroup',id);
     this.performRequest({
       method: 'get',
-      uri: url,
+      url: '/:customer/hostgroup/' + id,
     }, function(error, body) {
       if(error) return callback(error);
       callback(null, body.group);
@@ -1244,10 +1233,9 @@ var prototype = {
    *
    **/
   hostgrouptasktemplateUpdate: function(groupid, taskid, updates, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate',taskid);
     this.performRequest({
       method: 'put',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/tasktemplate/' + taskid,
       body: updates
     },function(error, body){
       if(error) return callback(error);
@@ -1258,10 +1246,9 @@ var prototype = {
    * add a new task to a group
    */
   hostgrouptasktemplateCreate: function(groupid, task, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate');
     this.performRequest({
       method: 'post',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/tasktemplate',
       body: task
     },function(error, body){
       if(error) return callback(error);
@@ -1272,11 +1259,9 @@ var prototype = {
    *
    */
   hostgrouptasktemplateDelete: function(groupid, taskid, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'tasktemplate',taskid);
-
     this.performRequest({
       method: 'delete',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/tasktemplate/' + taskid,
     },function(error){
       if(error) return callback(error);
       callback(null);
@@ -1296,10 +1281,9 @@ var prototype = {
    *
    **/
   hostgroupmonitortemplateUpdate: function(groupid, monitorid, updates, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate',monitorid);
     this.performRequest({
       method: 'put',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/monitortemplate/' + monitorid,
       body: updates
     },function(error, body){
       if(error) return callback(error);
@@ -1314,10 +1298,9 @@ var prototype = {
    * @param {Function} callback
    */
   hostgroupmonitortemplateCreate: function(groupid, monitor, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate');
     this.performRequest({
       method: 'post',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/monitortemplate',
       body: monitor
     },function(error, body){
       if(error) return callback(error);
@@ -1328,11 +1311,9 @@ var prototype = {
    *
    */
   hostgroupmonitortemplateDelete: function(groupid, monitorid, callback){
-    var url = path.join(this.client_customer,'hostgroup',groupid,'monitortemplate',monitorid);
-
     this.performRequest({
       method: 'delete',
-      uri: url,
+      uri: '/:customer/hostgroup/' + groupid + '/monitortemplate/' + monitorid,
     },function(error){
       if(error) return callback(error);
       callback(null);
