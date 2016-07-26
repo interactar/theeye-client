@@ -14,7 +14,7 @@ var logger = {
 
 var EventEmitter = require('events').EventEmitter;
 
-var CLIENT_VERSION = 'v0.7.1-beta' ;
+var CLIENT_VERSION = 'v0.8.1' ;
 
 var CLIENT_NAME = 'Golum' ;
 
