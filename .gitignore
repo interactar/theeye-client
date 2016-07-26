@@ -2,3 +2,4 @@ node_modules/
 *.swp
 newrelic*.log
 config/development.*
+npm-debug.log

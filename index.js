@@ -1,15 +1,15 @@
-'use strict'
+'use strict';
 
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var request = require('request');
 var util = require('util');
-var format = util.format;
+var debug = require('debug');
 
 var logger = {
-  'debug' : require('debug')('eye:client:debug') ,
-  'error' : require('debug')('eye:client:error')
+  'debug': debug('eye:client:debug'),
+  'error': debug('eye:client:error')
 };
 
 var EventEmitter = require('events').EventEmitter;
@@ -18,10 +18,10 @@ var CLIENT_VERSION = 'v0.7.1-beta' ;
 
 var CLIENT_NAME = 'Golum' ;
 
-var GET    = 'get';
-var PUT    = 'put';
-var POST   = 'post';
-var PATCH  = 'patch';
+var GET = 'get';
+var PUT = 'put';
+var POST = 'post';
+var PATCH = 'patch';
 var DELETE = 'delete';
 
 module.exports = TheEyeClient;
@@ -64,11 +64,11 @@ var prototype = {
 
     for(var prop in options) connection[prop] = options[prop];
 
-    connection.api_url = options.api_url || process.env.THEEYE_SUPERVISOR_API_URL ;
-    connection.client_id = options.client_id || process.env.THEEYE_SUPERVISOR_CLIENT_ID ;
-    connection.client_secret = options.client_secret || process.env.THEEYE_SUPERVISOR_CLIENT_SECRET ;
-    connection.client_customer = options.client_customer || process.env.THEEYE_SUPERVISOR_CLIENT_CUSTOMER ;
-    connection.access_token = options.access_token || null ;
+    connection.api_url = options.api_url||process.env.THEEYE_SUPERVISOR_API_URL ;
+    connection.client_id = options.client_id||process.env.THEEYE_SUPERVISOR_CLIENT_ID ;
+    connection.client_secret = options.client_secret||process.env.THEEYE_SUPERVISOR_CLIENT_SECRET ;
+    connection.client_customer = options.client_customer||process.env.THEEYE_SUPERVISOR_CLIENT_CUSTOMER ;
+    connection.access_token = options.access_token||null ;
 
     logger.debug('connection properties => %o', connection);
     if( ! connection.api_url ) {
@@ -102,7 +102,7 @@ var prototype = {
 
     logger.debug('sending new authentication request');
 
-    var next = next || function(){};
+    next||(next=function(){});
 
     this.request.post({
       'baseUrl' : this.api_url,
@@ -503,33 +503,25 @@ var prototype = {
   },
   /**
    *
-   * Download the file script. Return a stream
+   * Download the script file with a strem.
+   * Returns the stream to persist in local storage.
    *
    * @author Facundo
    * @param {Integer} script id
-   * @param {Function} callback
-   * @return {Stream} script file data stream
+   * @return {Stream} downloaded file stream
    *
    */
-  scriptDownloadStream : function(scriptId, destinationPath, next) {
-    var writable = fs.createWriteStream( destinationPath, { mode:'0755' } );
-
-    this.performRequest({
+  scriptDownloadStream : function(scriptId)
+  {
+    return this.performRequest({
       method: 'get',
       url: '/:customer/script/' + scriptId  + '/download'
     })
     .on('response', function(response) {
       if(response.statusCode != 200) {
-        this.emit('error', new Error('get script response error ' + response.statusCode));
+        var error = new Error('get script response error ' + response.statusCode);
+        this.emit('error', error);
       }
-    })
-    .on('error',function(error){
-      logger.error('request produce an error');
-      logger.error(error.message);
-    })
-    .pipe( writable )
-    .on('finish',function(){
-      if(next) next();
     });
   },
   /**
@@ -960,10 +952,9 @@ var prototype = {
    *
    */
   hostStats: function(id, callback){
-    var path = format('/host/%s/stats', id);
     this.performRequest({
       method: 'get',
-      url: path
+      url: '/host/'+ id + '/stats'
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.stats);
