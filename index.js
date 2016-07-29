@@ -359,15 +359,19 @@ var prototype = {
       }
     }, function(error,body){
       if( ! error ) {
-        if( body && body.jobs ) {
-          doneFn(null, body.jobs[0]);
+        if(body&&body.jobs) {
+          if(Array.isArray(body.jobs)&&body.jobs.length>0){
+            doneFn(null, body.jobs[0]);
+          }
+          else doneFn();
         } else {
-          logger.error('getNextPendingJob : body content error');
-          doneFn(error, null);
+          var error = new Error('api response with empty content.');
+          logger.error(error);
+          doneFn(error);
         }
       } else {
-        logger.error('getNextPendingJob : request error');
-        logger.error(error, null);
+        logger.error('api request error %s.',error);
+        logger.error(error);
       }
     });
   },

@@ -1,6 +1,10 @@
 # CHANGELOG
 
-### 0.9.0 - 2016-07-25
+### 0.8.2 - 2016-07-29
+
+> add validation on getNextPendingJob method
+
+### 0.8.1 - 2016-07-25
 
 > added this changelog.    
 
