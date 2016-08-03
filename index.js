@@ -728,12 +728,10 @@ var prototype = {
     this.performRequest({
       method: 'POST',
       uri: '/:customer/job',
-      qs: {
-        'task_id': task_id
-      }
+      qs: { 'task_id': task_id }
     }, function(error, body) {
       if (error) return callback(error);
-      callback(null, body);
+      callback(null, body.job);
     });
   },
   /**

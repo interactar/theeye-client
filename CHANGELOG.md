@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### 0.8.3 - 2016-08-03
+
+> change license to MIT
+
+> method interface. change method response
+
 ### 0.8.2 - 2016-07-29
 
 > add validation on getNextPendingJob method
@@ -13,5 +19,3 @@
 > README.md updated with sample code to use this client.    
 
 > added example directory with sample code.    
-
-

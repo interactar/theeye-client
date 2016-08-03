@@ -1,8 +1,12 @@
 {
   "name": "theeye-client",
   "author": "Facundo <facugon@interactar.com>",
-  "license": "Apache-2.0",
-  "version": "0.8.2",
+  "license": "MIT",
+  "version": "0.8.3",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/interactar/theeye-client.git"
+  },
   "description": "TheEye API Client",
   "main": "index.js",
   "scripts": {
