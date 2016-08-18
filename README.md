@@ -53,3 +53,5 @@ then in `yourscript.js` just `require` and then instantiate the client:
 `const client = new TheEye();`
 
 If all the necesary data is set and correct, `client` will be ready to make requests to the API.
+
+See the example script in `example` directory
