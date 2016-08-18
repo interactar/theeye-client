@@ -93,16 +93,16 @@ var prototype = {
    *
    */
   refreshToken : function(next) {
+    next||(next=function(){});
     var connection = this;
 
     if(!this.client_id || !this.client_secret){
       logger.debug('no credentials!');
-      throw new Error('no credential provided. client_id & client_secret required');
+      var error = new Error('no credential provided. client_id & client_secret required');
+      return next(error);
     }
 
     logger.debug('sending new authentication request');
-
-    next||(next=function(){});
 
     this.request.post({
       'baseUrl' : this.api_url,
@@ -663,6 +663,7 @@ var prototype = {
       'script': task.script_id,
       'public': task.public,
       'script_arguments': task.script_arguments.split(','),
+      'script_runas': task.script_runas,
       'hosts': task.hosts_id
     };
 
@@ -691,6 +692,7 @@ var prototype = {
       'description': task.description,
       'host': task.host_id,
       'script': task.script_id,
+      'script_runas': task.script_runas,
       'public': task.public
     };
 
@@ -728,7 +730,7 @@ var prototype = {
     this.performRequest({
       method: 'POST',
       uri: '/:customer/job',
-      qs: { 'task_id': task_id }
+      qs: { 'task': task_id }
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.job);
