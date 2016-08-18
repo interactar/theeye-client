@@ -1,5 +1,16 @@
 # CHANGELOG
 
+### 0.8.4 - 2016-08-17
+
+> added reference to example in README.md     
+
+> change task create payload : `task_id` become `task`.     
+
+> added `script_runas` parameter      
+
+> remove `throw new Error` when credentials are invalid or not present. instead create and return an Error instance      
+
+
 ### 0.8.3 - 2016-08-03
 
 > change license to MIT
