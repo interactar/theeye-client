@@ -1,5 +1,12 @@
 # CHANGELOG
 
+### 0.8.5 - 2016-08-19
+
+> remove taskcreate method    
+
+> add create method, with generic payload and success failure response      
+
+
 ### 0.8.4 - 2016-08-17
 
 > added reference to example in README.md     

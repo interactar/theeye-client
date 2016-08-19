@@ -14,7 +14,7 @@ var logger = {
 
 var EventEmitter = require('events').EventEmitter;
 
-var CLIENT_VERSION = 'v0.8.1' ;
+var CLIENT_VERSION = 'v0.8.5' ;
 
 var CLIENT_NAME = 'Golum' ;
 
@@ -41,7 +41,6 @@ function TheEyeClient (options)
   return this;
 }
 
-
 util.inherits(TheEyeClient, EventEmitter);
 
 /**
@@ -49,6 +48,7 @@ util.inherits(TheEyeClient, EventEmitter);
  *
  */
 var prototype = {
+  TASK: 'task',
   /**
    *
    * @author Facundo
@@ -81,7 +81,9 @@ var prototype = {
       timeout: 5000,
       json: true,
       gzip: true,
-      headers: { 'User-Agent': CLIENT_NAME + '/' + CLIENT_VERSION },
+      headers: {
+        'User-Agent': CLIENT_NAME + '/' + CLIENT_VERSION
+      },
       baseUrl: connection.api_url
     });
   },
@@ -274,10 +276,23 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  get : function(route,query,next) {
+  get: function(route,id,query,next) {
     var options = {
       method: 'GET',
-      url: route,
+      url: '/' + route + '/' + id,
+      qs: query
+    };
+    return this.performRequest(options, next);
+  },
+  /**
+   * get fetch request wrapper
+   * @author Facundo
+   * @return Request connection.request
+   */
+  fetch: function(route,query,next){
+    var options = {
+      method: 'GET',
+      url: '/' + route,
       qs: query
     };
     return this.performRequest(options, next);
@@ -300,24 +315,27 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  post : function(route,query,body,next) {
-    var options = {
+  create : function(options) {
+    var request = this.performRequest({
       method: 'POST',
-      url: route,
-      body: body,
-      qs: query
-    };
-    return this.performRequest(options, next);
+      url: '/' + options.resource,
+      body: options.body||null,
+      qs: options.query||null
+    },(error, body) => {
+      if(error) options.failure(error,request);
+      else options.success(body,request);
+    });
+    return request;
   },
   /**
    * put request wrapper
    * @author Facundo
    * @return Request connection.request
    */
-  put : function(route,query,body,next) {
+  replace : function(route,id,query,body,next) {
     var options = {
       method: 'PUT',
-      url: route,
+      url: '/' + route + '/' + id,
       body: body,
       qs: query
     };
@@ -328,7 +346,7 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  patch : function(route,query,body,next) {
+  change : function(route,query,body,next) {
     var options = {
       method: 'PATCH',
       url: route,
@@ -642,38 +660,6 @@ var prototype = {
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.tasks);
-    });
-  },
-  /**
-  * Creates a new task for a customer in the supervisor
-  *
-  *
-  * @param {Object} task - A task object.
-  *   - param {String} name - Task name.
-  *   - param {String} description - Task description.
-  * @param {Function} callback - Called with the task as second parameter.
-  *   - param {Error} error - Null if nothing bad happened.
-  *   - param {Array} task - the new task object.
-  */
-  createTask: function(task, callback) {
-
-    var formData = {
-      'name': task.name,
-      'description': task.description,
-      'script': task.script_id,
-      'public': task.public,
-      'script_arguments': task.script_arguments.split(','),
-      'script_runas': task.script_runas,
-      'hosts': task.hosts_id
-    };
-
-    this.performRequest({
-      method: 'post',
-      url: '/task',
-      formData: formData
-    }, function(error, body) {
-      if (error) return callback(error);
-      callback(null, body);
     });
   },
   /**
