@@ -2,19 +2,33 @@
   "name": "theeye-client",
   "author": "Facundo <facugon@interactar.com>",
   "license": "MIT",
-  "version": "0.8.5",
+  "version": "0.9.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/interactar/theeye-client.git"
+    "type": "git",
+    "url": "git+https://github.com/interactar/theeye-client.git"
   },
   "description": "TheEye API Client",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "mocha"
   },
   "dependencies": {
     "debug": "2.2.0",
     "mocha": "2.3.4",
     "request": "2.55.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/interactar/theeye-client/issues"
+  },
+  "homepage": "https://github.com/interactar/theeye-client#readme",
+  "directories": {
+    "example": "example"
+  },
+  "devDependencies": {
+    "mocha": "2.3.4"
+  },
+  "keywords": [
+    "Theeye",
+    "Client"
+  ]
 }
