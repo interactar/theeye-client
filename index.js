@@ -321,7 +321,7 @@ var prototype = {
       url: '/' + options.resource,
       body: options.body||null,
       qs: options.query||null
-    },(error, body) => {
+    },function(error, body){
       if(error) options.failure(error,request);
       else options.success(body,request);
     });
