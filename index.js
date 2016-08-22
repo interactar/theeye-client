@@ -48,7 +48,9 @@ util.inherits(TheEyeClient, EventEmitter);
  *
  */
 var prototype = {
-  TASK: 'task',
+  TASK: '/:customer/task',
+  TAG: '/:customer/tag',
+  RESOURCE: '/:customer/resource',
   /**
    *
    * @author Facundo
@@ -276,10 +278,10 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  get: function(route,id,query,next) {
+  get: function(options) {
     var options = {
       method: 'GET',
-      url: '/' + route + '/' + id,
+      url: options.route + '/' + id,
       qs: query
     };
     return this.performRequest(options, next);
@@ -289,23 +291,26 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  fetch: function(route,query,next){
-    var options = {
+  fetch: function(options){
+    var request = this.performRequest({
       method: 'GET',
-      url: '/' + route,
-      qs: query
-    };
-    return this.performRequest(options, next);
+      url: options.route,
+      qs: options.query
+    },function(error, body){
+      if(error) options.failure(error,request);
+      else options.success(body,request);
+    });
+    return request;
   },
   /**
    * delete request wrapper
    * @author Facundo
    * @return Request connection.request
    */
-  remove : function(route,query,next) {
+  remove : function(options) {
     var options = {
       method: 'DELETE',
-      url: route,
+      url: options.route,
       qs: query
     };
     return this.performRequest(options, next);
@@ -318,7 +323,7 @@ var prototype = {
   create : function(options) {
     var request = this.performRequest({
       method: 'POST',
-      url: '/' + options.resource,
+      url: options.route,
       body: options.body||null,
       qs: options.query||null
     },function(error, body){
@@ -332,28 +337,34 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-  replace : function(route,id,query,body,next) {
-    var options = {
+  update : function(options) {
+    var request = this.performRequest({
       method: 'PUT',
-      url: '/' + route + '/' + id,
-      body: body,
-      qs: query
-    };
-    return this.performRequest(options, next);
+      url: options.route + '/' + options.id,
+      body: options.body||null,
+      qs: options.query||null
+    },function(error, body){
+      if(error) options.failure(error,request);
+      else options.success(body,request);
+    });
+    return request;
   },
   /**
    * patch request wrapper
    * @author Facundo
    * @return Request connection.request
    */
-  change : function(route,query,body,next) {
-    var options = {
+  patch : function(options) {
+    var request = this.performRequest({
       method: 'PATCH',
-      url: route,
-      body: body,
-      qs: query
-    };
-    return this.performRequest(options, next);
+      url: options.route + '/' + options.id,
+      body: options.body || null,
+      qs: options.query || null
+    },function(error, body){
+      if(error) options.failure(error,request);
+      else options.success(body,request);
+    });
+    return request;
   },
   /**
    *
@@ -488,6 +499,11 @@ var prototype = {
   //
   //
   //
+  tags: function(callback){
+    this.performRequest({ method: 'get', url: this.TAG }, function(error,body){
+      callback(error, body);
+    });
+  },
   /**
    * Gets a script by its Id
    *
@@ -639,7 +655,7 @@ var prototype = {
   task: function(id, callback) {
     this.performRequest({
       method: 'get',
-      uri: '/task/' + id
+      uri: this.TASK + '/' + id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -656,43 +672,10 @@ var prototype = {
   tasks: function(callback) {
     this.performRequest({
       method: 'get',
-      url: '/task',
+      url: this.TASK,
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.tasks);
-    });
-  },
-  /**
-   * partially update a task
-   *
-   * @param {Object} task - A task object.
-   *   - param {String} description - Task name.
-   *   - param {String} description - Task description.
-   * @param {Function} callback - Called with the task as second parameter.
-   *   - param {Error} error - Null if nothing bad happened.
-   *   - param {Array} task - the new task object.
-   */
-  patchTask: function(id, task, callback) {
-    var formData = {
-      'name': task.name,
-      'description': task.description,
-      'host': task.host_id,
-      'script': task.script_id,
-      'script_runas': task.script_runas,
-      'public': task.public
-    };
-
-    if(task.resource_id) formData['resource'] = task.resource_id;
-    var args = task.script_arguments.split(',');
-    formData['script_arguments'] = args;
-
-    this.performRequest({
-      method: 'patch',
-      uri: '/task/' + id,
-      formData: formData
-    }, function(error, body) {
-      if (error) return callback(error);
-      callback(null, body);
     });
   },
   /**
@@ -702,7 +685,7 @@ var prototype = {
   deleteTask: function(task_id, callback) {
     this.performRequest({
       method: 'delete',
-      uri: '/task/' + task_id
+      uri: this.TASK + '/' + task_id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body);
@@ -819,62 +802,6 @@ var prototype = {
       url: '/:customer/resource/' + id
     }, function(error, body) {
       if (error) return callback(error);
-      callback(null, body);
-    });
-  },
-  /**
-   *
-   *
-   */
-  createResource : function(resource, callback) {
-    var formData = {};
-    Object.keys(resource).forEach(function(key) {
-      if(key == 'hosts'){
-        formData['hosts'] = resource.hosts;
-      }
-      else if(key == 'script_arguments') {
-        formData['script_arguments'] = [];
-        var args = resource.script_arguments.split(',');
-        for(var i=0; i<args.length; i++)
-          formData['script_arguments'].push( args[i].trim() );
-      }
-      else formData[key] = resource[key];
-    });
-
-    this.performRequest({
-      method: 'post',
-      url: '/:customer/resource',
-      formData: formData
-    }, function(error, body) {
-      if (error) return callback(error);
-      callback(null, body);
-    });
-  },
-  /**
-   *
-   *
-   */
-  patchResource: function(id, resource, callback) {
-    var formData = {};
-
-    Object.keys(resource).forEach(function(key) {
-      if(key == 'script_arguments') {
-        formData['script_arguments'] = [];
-        var args = resource.script_arguments.split(',');
-        for(var i=0; i<args.length; i++)
-          formData['script_arguments'].push( args[i].trim() );
-      }
-      else formData[key] = resource[key];
-    });
-
-    this.performRequest({
-      method: 'patch',
-      url: '/:customer/resource/' + id,
-      formData: formData
-    }, function(error, body) {
-      if (error) return callback(error);
-
-      logger.debug('resource patch success');
       callback(null, body);
     });
   },
