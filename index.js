@@ -769,24 +769,26 @@ var prototype = {
     });
   },
   /**
-   * Scheduler functionality mini-readme:
-   * The scheduler executes jobs. The jobs always refer
-   * to a task, user and customer. The scheduler interacts only
-   * with the Job Controller on the supervisor. On the web this is done
-   * via the the Palanca Controller
-   * (Web) Palanca -> (Lib) Client -> (Supervisor) Job
-   *
-   * Schedules a job for delayed running.
-   * @param data {Object}
-   *  - runDate: Date.toString | human-interval
-   *  - repeatEvery: interval
+   * Task schedule POST
    */
-  jobSchedule: function(data, callback){
+  scheduleTask: function(data, callback){
     this.performRequest({
-      method: 'post',
-      uri: '/job/schedule',
+      method: 'POST',
+      uri: '/:customer/task/schedule',
       body: data,
       json: true
+    }, function(error, body){
+      if (error) return callback(error);
+      callback(null, body);
+    });
+  },
+  /**
+   * Task schedule GET
+   */
+  getTaskSchedule: function(task_id, callback){
+    this.performRequest({
+      method: 'GET',
+      uri: '/:customer/task/' + task_id + '/schedule'
     }, function(error, body){
       if (error) return callback(error);
       callback(null, body);
@@ -1099,7 +1101,7 @@ var prototype = {
   userGet : function(id, callback) {
     this.performRequest({
       method: 'get',
-      url: '/user/' + id 
+      url: '/user/' + id
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.user);
