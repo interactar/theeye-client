@@ -14,7 +14,7 @@ var logger = {
 
 var EventEmitter = require('events').EventEmitter;
 
-var CLIENT_VERSION = 'v0.8.5' ;
+var CLIENT_VERSION = 'v0.9.2' ;
 
 var CLIENT_NAME = 'Golum' ;
 
@@ -355,9 +355,13 @@ var prototype = {
    * @return Request connection.request
    */
   patch : function(options) {
+    var url = options.route;
+    if( options.id ) url += '/' + options.id;
+    if( options.child ) url += '/' + options.child;
+
     var request = this.performRequest({
       method: 'PATCH',
-      url: options.route + '/' + options.id,
+      url: url,
       body: options.body || null,
       qs: options.query || null
     },function(error, body){
