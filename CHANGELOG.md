@@ -1,17 +1,20 @@
 # CHANGELOG
 
 ### 0.9.3 - 2016-08-24
+
 > renamed jobSchedule method to scheduleTask for proper functionality and readability
 
 > changed endpoint for scheduleTask to POST /:customer/task/schedule
 
 > added method getTaskSchedule(task_id, cb) pointing to GET /:customer/task/:task/schedule
 
+> added patch generic method with optional id and child route            
+
 ### 0.9.2 - 2016-08-22
 
 > remove unused methods. (task and resource)      
 
-> add create, update, path, remove, get and fetch wrappers. (instead of using specific methods for each endpoint)      
+> add create, update, patch, remove, get and fetch wrappers. (instead of using specific methods for each endpoint)      
 
 > remove ES6 syntax. theeye-agent client unsupported     
 

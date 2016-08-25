@@ -1,5 +1,8 @@
 'use strict';
 
+var CLIENT_VERSION = 'v0.9.3' ;
+var CLIENT_NAME = 'Golum' ;
+
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
@@ -13,10 +16,6 @@ var logger = {
 };
 
 var EventEmitter = require('events').EventEmitter;
-
-var CLIENT_VERSION = 'v0.9.2' ;
-
-var CLIENT_NAME = 'Golum' ;
 
 var GET = 'get';
 var PUT = 'put';
