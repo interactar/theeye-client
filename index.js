@@ -278,12 +278,19 @@ var prototype = {
    * @return Request connection.request
    */
   get: function(options) {
-    var options = {
+    var url = options.route;
+    if( options.id ) url += '/' + options.id;
+    if( options.child ) url += '/' + options.child;
+
+    var request = this.performRequest({
       method: 'GET',
-      url: options.route + '/' + id,
-      qs: query
-    };
-    return this.performRequest(options, next);
+      url: url,
+      qs: options.query || null
+    },function(error, body){
+      if(error) options.failure(error,request);
+      else options.success(body,request);
+    });
+    return request;
   },
   /**
    * get fetch request wrapper
