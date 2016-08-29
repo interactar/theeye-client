@@ -313,20 +313,20 @@ var prototype = {
    * @author Facundo
    * @return Request connection.request
    */
-	remove : function(options) {
-		var url = options.route;
-		if( options.id ) url += '/' + options.id;
-		if( options.child ) url += '/' + options.child;
+  remove : function(options) {
+    var url = options.route;
+    if( options.id ) url += '/' + options.id;
+    if( options.child ) url += '/' + options.child;
 
-		var request = this.performRequest({
-			method: 'DELETE',
-			url: url,
-			qs: options.query || null
-		}, function(error, body){
-			if(error) options.failure(error, request);
-			else options.success(body, request);
-		});
-	},
+    var request = this.performRequest({
+      method: 'DELETE',
+      url: url,
+      qs: options.query || null
+    }, function(error, body){
+      if(error) options.failure(error, request);
+      else options.success(body, request);
+    });
+  },
   /**
    * post request wrapper
    * @author Facundo
