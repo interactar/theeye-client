@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### 0.9.4 - 2016-08-29
+
+> add delete generic method      
+
+> add get generic method      
+
 ### 0.9.3 - 2016-08-24
 
 > renamed jobSchedule method to scheduleTask for proper functionality and readability
