@@ -492,18 +492,18 @@ var prototype = {
       url:  '/:customer/agent/:hostname/config'
     },function(error,body){
       if( error ) {
-        logger.error('getAgentConfig : request error');
+        logger.error('request error');
         logger.error(error.message);
         next(error,null);
       } else {
-        if( ! body || ! body.config ) {
-          logger.error('getAgentConfig : respose body error. no "data" property found');
+        if( ! body || ! body instanceof Object ) {
+          logger.error('respose body error. no config found');
           logger.error(body);
           next(error,null);
         } else {
-          logger.debug('%j', body.config);
           logger.debug('agent config fetch success');
-          next(null,body.config);
+          logger.debug('%j', body);
+          next(null,body);
         }
       }
     });
