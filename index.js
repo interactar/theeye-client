@@ -298,10 +298,11 @@ var prototype = {
    * @return Request connection.request
    */
   fetch: function(options){
+    var url = options.route;
     var request = this.performRequest({
       method: 'GET',
-      url: options.route,
-      qs: options.query
+      url: url,
+      qs: options.query || null
     },function(error, body){
       if(error) options.failure(error,request);
       else options.success(body,request);
@@ -689,9 +690,9 @@ var prototype = {
     this.performRequest({
       method: 'get',
       url: this.TASK,
-    }, function(error, body) {
+    }, function(error, tasks) {
       if (error) return callback(error);
-      callback(null, body.tasks);
+      callback(null, tasks);
     });
   },
   /**
