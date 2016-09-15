@@ -1,7 +1,10 @@
 'use strict';
 
-var CLIENT_VERSION = 'v0.9.3' ;
+var CLIENT_VERSION = 'v0.9.7' ;
+
 var CLIENT_NAME = 'Golum' ;
+
+var CLIENT_USER_AGENT = CLIENT_NAME + '/' + CLIENT_VERSION ;
 
 var os = require('os');
 var fs = require('fs');
@@ -9,19 +12,13 @@ var path = require('path');
 var request = require('request');
 var util = require('util');
 var debug = require('debug');
+var EventEmitter = require('events').EventEmitter;
 
 var logger = {
   'debug': debug('eye:client:debug'),
   'error': debug('eye:client:error')
 };
 
-var EventEmitter = require('events').EventEmitter;
-
-var GET = 'get';
-var PUT = 'put';
-var POST = 'post';
-var PATCH = 'patch';
-var DELETE = 'delete';
 
 module.exports = TheEyeClient;
 
@@ -83,7 +80,7 @@ var prototype = {
       json: true,
       gzip: true,
       headers: {
-        'User-Agent': CLIENT_NAME + '/' + CLIENT_VERSION
+        'User-Agent': CLIENT_USER_AGENT
       },
       baseUrl: connection.api_url
     });
@@ -716,7 +713,7 @@ var prototype = {
     this.performRequest({
       method: 'POST',
       uri: '/:customer/job',
-      qs: { 'task': task_id }
+      qs: { task: task_id }
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.job);
@@ -792,23 +789,6 @@ var prototype = {
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.resource);
-    });
-  },
-  /**
-  * Gets available resources for customer and username
-  *
-  * @param {Number} id - The resource id in supervisor
-  * @param {Function} callback - Called with the resources as second parameter.
-  *   - param {Error} error - Null if nothing bad happened.
-  *   - param {Array} resources - Array of resource objects.
-  */
-  resources: function(callback) {
-    this.performRequest({
-      method: 'get',
-      url: '/:customer/resource'
-    }, function(error, body) {
-      if (error) return callback(error);
-      callback(null, body.resources);
     });
   },
   /**
@@ -894,22 +874,6 @@ var prototype = {
     }, function(error, body) {
       if (error) return callback(error);
       callback(null, body.stats);
-    });
-  },
-  /**
-   *
-   *
-   */
-  hostResource: function(id, callback){
-    this.performRequest({
-      method: 'get',
-      url: '/:customer/resource',
-      qs: {
-        host: id
-      }
-    }, function(error, body) {
-      if (error) return callback(error);
-      callback(null, body.resources[0]);
     });
   },
   /**

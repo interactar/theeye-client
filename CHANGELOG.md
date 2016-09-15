@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.9.7 - 2016-09-15
+
+> remove unused resources fetch methods     
+
 ### 0.9.5 - 2016-08-30
 
 > agent config endpoint return config object with workers and agent settings. config keyword removed from response            
