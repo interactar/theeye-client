@@ -1,6 +1,6 @@
 'use strict';
 
-var CLIENT_VERSION = 'v0.9.7' ;
+var CLIENT_VERSION = 'v0.9.8' ;
 
 var CLIENT_NAME = 'Golum' ;
 
@@ -47,6 +47,7 @@ var prototype = {
   TASK: '/:customer/task',
   TAG: '/:customer/tag',
   RESOURCE: '/:customer/resource',
+  EVENTS: '/:customer/event',
   /**
    *
    * @author Facundo

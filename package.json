@@ -2,7 +2,7 @@
   "name": "theeye-client",
   "author": "Facundo <facugon@interactar.com>",
   "license": "MIT",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/interactar/theeye-client.git"
